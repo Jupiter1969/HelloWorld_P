@@ -23,3 +23,15 @@ LISP语言唯一的语法就是括号要配对。 形如 (OP P1 P2 ...)，括号
 题目涉及数字均为整数，可能为负；不考虑32位溢出翻转 除零错误时，输出 "error"，除法遇除不尽，取整，即 3/2 = 1
 '''
 
+from collections import deque
+
+#lisp_exp = input("Please input LISP expression:")
+#print(lisp_exp)
+
+stack = [3,4,5]
+print(stack)
+stack.append(6)
+stack.append(7)
+print(stack)
+stack.pop()
+print(stack)
