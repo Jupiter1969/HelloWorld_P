@@ -23,15 +23,96 @@ LISP语言唯一的语法就是括号要配对。 形如 (OP P1 P2 ...)，括号
 题目涉及数字均为整数，可能为负；不考虑32位溢出翻转 除零错误时，输出 "error"，除法遇除不尽，取整，即 3/2 = 1
 '''
 
-from collections import deque
+def lisp(exp = ''):
+    if exp == '':
+        print('InvalidExpression')
+        return
+    op_stack = [] #运算符栈
+    str_stack = [] #除运算符以外的字符栈
+    i = 0
+    flag = 0
+    invalid_exp = 0
+    result = 0
 
-#lisp_exp = input("Please input LISP expression:")
-#print(lisp_exp)
+    # for循环必须下标i逐个遍历，不能跳
+    # for i in range(len(exp)):
 
-stack = [3,4,5]
-print(stack)
-stack.append(6)
-stack.append(7)
-print(stack)
-stack.pop()
-print(stack)
+    while i<len(exp):
+        if exp[i] == ' ':
+            i = i + 1
+            continue
+        elif exp[i] == '(':
+            str_stack.append(exp[i])
+            while (1):
+                next_space_index = exp.find(' ', i)
+                if next_space_index == -1:
+                    print('InvalidExpression')
+                    return
+                if next_space_index - i < 2:
+                    i = i + 1
+                    flag = 1
+                    continue
+                break
+            if flag == 0:
+                op_tmp = exp[i+1:next_space_index]
+            else:
+                op_tmp = exp[i:next_space_index]
+            op_stack.append(op_tmp)
+            i = next_space_index + 1
+            flag = 0
+        elif exp[i] == ')':
+            if len(op_stack) == 0:
+                print('InvalidExpression')
+                return
+            op = op_stack.pop()
+            #pop out 2 number
+            num1 = int(str_stack.pop())
+            num2 = int(str_stack.pop())
+            #pop out '('
+            str_stack.pop()
+            if op == 'add':
+                result = num2 + num1
+            elif op == 'sub':
+                result = num2 - num1
+            elif op == 'mul':
+                result = num2 * num1
+            elif op == 'div':
+                if num1 == 0:
+                    print('error')
+                    return
+                result = int(num2 / num1)
+            else:
+                print('InvalidExpression')
+                return
+            str_stack.append(result)
+            i = i + 1
+        else:
+            space = exp.find(' ', i)
+            paren = exp.find(')', i)
+            if paren < space or space == -1:
+                str_tmp = exp[i:paren]
+            else:
+                str_tmp = exp[i:space]
+            str_stack.append(str_tmp)
+            i = i + 1
+    result = str_stack.pop()
+    if len(str_stack) >0 or len(op_stack) >0 or invalid_exp == 1:
+        print('InvalidExpression')
+        return
+    else:
+        print(result)
+        return
+
+
+
+lisp()  #InvalidExpression
+lisp('(')   #InvalidExpression
+lisp(')')   #InvalidExpression
+lisp('()')  #InvalidExpression
+lisp('(sub (mul 2 4) (div 9 3))')   #5
+lisp('( sub ( mul 2 4 ) ( div 9 3 ) ) ')
+lisp('( sub ( mul 2 4 ) ( div 9 3 )  ')
+lisp('(sub (mul 2 4 (div 9 3))')
+
+
+
